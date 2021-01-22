@@ -70,18 +70,14 @@ add_library(Crypto
   Util/SecureBytes.swift
   Util/Zeroization.swift)
 
-target_link_libraries(Crypto PUBLIC
-  CCryptoBoringSSL
-  CCryptoBoringSSLShims)
-
-if(APPLE AND CRYPTO_KIT)
-  target_link_libraries(Crypto PRIVATE
-    ${CRYPTO_KIT})
-endif()
-
 target_include_directories(Crypto PRIVATE
   $<TARGET_PROPERTY:CCryptoBoringSSL,INCLUDE_DIRECTORIES>
   $<TARGET_PROPERTY:CCryptoBoringSSLShims,INCLUDE_DIRECTORIES>)
+target_link_libraries(Crypto PUBLIC
+  CCryptoBoringSSL
+  CCryptoBoringSSLShims)
+target_link_options(Crypto PRIVATE
+  "$<$<PLATFORM_ID:Darwin>:SHELL:-Xlinker -framework -Xlinker CryptoKit>")
 set_target_properties(Crypto PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_Swift_MODULE_DIRECTORY})
 
